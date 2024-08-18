@@ -1,0 +1,19 @@
+{
+  "name": "nodejwt-pg",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --watch index.js",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Practica de JWT y Database POSTGRESQL",
+  "dependencies": {
+    "dotenv": "16.4.5",
+    "express": "4.19.2",
+    "pg": "8.12.0"
+  }
+ }
