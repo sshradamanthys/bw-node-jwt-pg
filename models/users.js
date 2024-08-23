@@ -1,4 +1,5 @@
 import { pool } from "../database/connection.js";
+import crypto from "crypto";
 
 export const getUsers = async () => {
   try {
@@ -25,6 +26,20 @@ export const getUserByEmail = async ({ email }) => {
     if (result.rows.length === 0) {
       return { message: "User not found" };
     }
+
+    return result.rows[0];
+  } catch (error) {
+    console.error(error);
+    return { message: "Server error" };
+  }
+};
+
+export const createUser = async ({ email, username, password }) => {
+  try {
+    const result = await pool.query({
+      text: "INSERT INTO users (email, username, password) VALUES ($1, $2, $3) RETURNING uid, email, username",
+      values: [email, username, password],
+    });
 
     return result.rows[0];
   } catch (error) {
