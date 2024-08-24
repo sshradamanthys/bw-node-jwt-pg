@@ -1,7 +1,6 @@
 import { pool } from "../database/connection.js";
-import crypto from "crypto";
 
-export const getUsers = async () => {
+const getUsers = async () => {
   try {
     const result = await pool.query("SELECT uid, email, username FROM users");
 
@@ -16,7 +15,7 @@ export const getUsers = async () => {
   }
 };
 
-export const getUserByEmail = async ({ email }) => {
+const getUserSafelyByEmail = async ({ email }) => {
   try {
     const result = await pool.query({
       text: "SELECT uid, email, username FROM users WHERE email = $1",
@@ -24,7 +23,7 @@ export const getUserByEmail = async ({ email }) => {
     });
 
     if (result.rows.length === 0) {
-      return { message: "User not found" };
+      return null;
     }
 
     return result.rows[0];
@@ -34,7 +33,25 @@ export const getUserByEmail = async ({ email }) => {
   }
 };
 
-export const createUser = async ({ email, username, password }) => {
+const getUserByEmail = async ({ email }) => {
+  try {
+    const result = await pool.query({
+      text: "SELECT * FROM users WHERE email = $1",
+      values: [email],
+    });
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return result.rows[0];
+  } catch (error) {
+    console.error(error);
+    return { message: "Server error" };
+  }
+};
+
+const createUser = async ({ email, username, password }) => {
   try {
     const result = await pool.query({
       text: "INSERT INTO users (email, username, password) VALUES ($1, $2, $3) RETURNING uid, email, username",
@@ -46,4 +63,11 @@ export const createUser = async ({ email, username, password }) => {
     console.error(error);
     return { message: "Server error" };
   }
+};
+
+export const UserModel = {
+  getUsers,
+  getUserByEmail,
+  getUserSafelyByEmail,
+  createUser,
 };
