@@ -1,26 +1,17 @@
 import { Router } from "express";
 import { PublicController } from "../controllers/public.js";
-import path from "path";
+import { UserController } from "../controllers/users.js";
 
 const router = Router();
 
-const __dirname = import.meta.dirname;
-const viewsPath = path.join(__dirname, "../views");
+router.get("/login", PublicController.loginView);
 
-router.get("/login", (req, res) => {
-  res.sendFile(viewsPath + "/login.html");
-});
+router.get("/register", PublicController.registerView);
 
-router.get("/register", (req, res) => {
-  res.sendFile(viewsPath + "/register.html");
-});
+router.get("/profile", PublicController.profileView);
 
-router.get("/profile", (req, res) => {
-  res.sendFile(viewsPath + "/profile.html");
-});
+router.post("/register", UserController.register);
 
-router.post("/register", PublicController.register);
-
-router.post("/login", PublicController.login);
+router.post("/login", UserController.login);
 
 export default router;

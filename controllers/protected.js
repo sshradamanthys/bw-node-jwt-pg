@@ -5,7 +5,7 @@ const profile = async (req, res) => {
   try {
     const { email } = req;
 
-    const user = await UserModel.getUserSafellyByEmail({ email });
+    const user = await UserModel.getUserSafelyByEmail({ email });
 
     if (!user) {
       return res.status(401).json({ message: "Unauthorized" });

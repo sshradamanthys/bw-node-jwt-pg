@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { getAll, getOneByEmail } from "../controllers/users.js";
+import { UserController } from "../controllers/users.js";
 
 const router = Router();
 
-router.get("/", getAll);
+router.get("/", UserController.getAll);
 
-router.get("/:email", getOneByEmail);
+router.get("/:email", UserController.getOneByEmail);
 
 export default router;
