@@ -17,33 +17,50 @@
     </style>
   </head>
   <body>
-    <nav class="navbar bg-dark">
-      <div class="container-fluid">
-        <a class="fs-4 text-white text-decoration-none" href="/logout"
-          >Logout</a
-        >
-      </div>
+    <nav class="navbar border border-1">
+      <a
+        href="/logout"
+        class="text-decoration-none text-white fs-2 fw-bold px-4"
+        >logout</a
+      >
     </nav>
-
-    <div class="container">
-      <h1 class="display-1 text-info-emphasis text-center my-4">Profile</h1>
-      <div class="card border border-info" style="width: 400px">
+    <div class="d-flex justify-content-center my-4">
+      <div class="card" style="width: 400px">
         <img
           src="https://picsum.photos/400/300"
           class="card-img-top"
           alt="Image from picsum-photos"
         />
-        <div class="card-body bg-dark">
-          <p class="card-text text-info">
+        <div class="card-body">
+          <h5 class="card-title" id="username"></h5>
+          <h3 class="card-title" id="email"></h3>
+          <p class="card-text">
             Some quick example text to build on the card title and make up the
             bulk of the card's content.
           </p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
         </div>
       </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <script>
-      console.log("Profile");
+      const token = localStorage.getItem("token");
+
+      axios
+        .get("/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(({ data }) => {
+          const { user } = data;
+
+          document.getElementById("username").textContent = user.username;
+          document.getElementById("email").textContent = user.email;
+        })
+        .catch((err) => console.error(err));
     </script>
   </body>
 </html>

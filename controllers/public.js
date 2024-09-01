@@ -17,8 +17,13 @@ const profileView = async (req, res) => {
   res.sendFile(viewsPath + "/profile.html");
 };
 
+const testingView = async (req, res) => {
+  res.sendFile(viewsPath + "/testing.html");
+};
+
 export const PublicController = {
   loginView,
   registerView,
   profileView,
+  testingView,
 };
