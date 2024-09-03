@@ -10,9 +10,10 @@ export const verifyToken = (req, res, next) => {
   token = token.replace("Bearer ", "");
 
   try {
-    const { email } = jwt.verify(token, process.env.JWT_SECRET_KEY); //payload (email)
+    const { email, role_id } = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
     req.email = email;
+    req.role_id = role_id;
     next();
   } catch (error) {
     return res.status(401).json({ message: "Invalid token" });

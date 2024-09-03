@@ -2,7 +2,9 @@ import { pool } from "../database/connection.js";
 
 const getUsers = async () => {
   try {
-    const result = await pool.query("SELECT uid, email, username FROM users");
+    const result = await pool.query(
+      "SELECT uid, email, username, role_id FROM users"
+    );
 
     if (result.rows.length === 0) {
       return { message: "No users found" };
@@ -18,7 +20,7 @@ const getUsers = async () => {
 const getUserSafelyByEmail = async ({ email }) => {
   try {
     const result = await pool.query({
-      text: "SELECT uid, email, username FROM users WHERE email = $1",
+      text: "SELECT uid, email, username, role_id FROM users WHERE email = $1",
       values: [email],
     });
 
@@ -54,7 +56,7 @@ const getUserByEmail = async ({ email }) => {
 const createUser = async ({ email, username, password }) => {
   try {
     const result = await pool.query({
-      text: "INSERT INTO users (email, username, password) VALUES ($1, $2, $3) RETURNING uid, email, username",
+      text: "INSERT INTO users (email, username, password) VALUES ($1, $2, $3) RETURNING uid, email, username, role_id",
       values: [email, username, password],
     });
 

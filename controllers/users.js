@@ -4,49 +4,64 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const getAll = async (req, res) => {
-  const users = await UserModel.getUsers();
-  res.json({ users });
+  try {
+    const users = await UserModel.getUsers();
+    res.json({ users });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
 };
 
 const getOneByEmail = async (req, res) => {
-  const { email } = req.params;
-  const user = await UserModel.getUserSafelyByEmail({ email });
-
-  res.json(user);
+  try {
+    const { email } = req.params;
+    const user = await UserModel.getUserSafelyByEmail({ email });
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
 };
 
 const register = async (req, res) => {
-  const { email, username, password } = req.body;
+  try {
+    const { email, username, password } = req.body;
 
-  if (!email || !username || !password) {
-    return res.status(400).json({ message: "Missing required fields" });
+    if (!email || !username || !password) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const user = await UserModel.getUserByEmail({ email });
+
+    if (user) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    const salt = await bcryptjs.genSalt(10);
+
+    const hashedPassword = await bcryptjs.hash(password, salt);
+
+    const newUser = await UserModel.createUser({
+      email,
+      username,
+      password: hashedPassword,
+    });
+
+    const token = jwt.sign(
+      {
+        email: newUser.email,
+        role_id: newUser.role_id,
+      },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+
+    res.status(201).json({ user: newUser, token });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
   }
-
-  const user = await UserModel.getUserByEmail({ email });
-
-  if (user) {
-    return res.status(400).json({ message: "Email already in use" });
-  }
-
-  const salt = await bcryptjs.genSalt(10);
-
-  const hashedPassword = await bcryptjs.hash(password, salt);
-
-  const newUser = await UserModel.createUser({
-    email,
-    username,
-    password: hashedPassword,
-  });
-
-  const token = jwt.sign(
-    {
-      email: newUser.email,
-    },
-    process.env.JWT_SECRET_KEY,
-    { expiresIn: "1h" }
-  );
-
-  res.status(201).json({ user: newUser, token });
 };
 
 const login = async (req, res) => {
@@ -72,6 +87,7 @@ const login = async (req, res) => {
     const token = jwt.sign(
       {
         email: user.email,
+        role_id: user.role_id,
       },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "1h" }
